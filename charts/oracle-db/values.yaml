@@ -1,0 +1,70 @@
+##This parameter changes the ORACLE_SID of the database. The default value is set to ORCLCDB.
+oracle_sid: ORCLCDB
+
+##This parameter modifies the name of the PDB. The default value is set to ORCLPDB1.
+oracle_pdb: ORCLPDB1
+
+## The Oracle Database SYS, SYSTEM and PDB_ADMIN password. Defaults to a randomly generated password
+oracle_pwd:
+
+## The character set to use when creating the database. Defaults to AL32UTF8
+oracle_characterset: AL32UTF8
+
+## Enable archive log mode when creating the database
+enable_archivelog: false
+
+## Enable persistence using Persistent Volume Claims
+## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+## Override 'persistence' to 'null' using '--set' option, if persistence is not desired (e.g. using the extended image with 'prebuiltdb' extension)
+persistence:
+  ## Oracle Database data Persistent Volume Storage Class, nfs or block
+  storageClass: "nfs-client"
+  # Upper limit of storage is 12Gb for Oracle XE - giving a bit more space _just in case_
+  size: 13Gi
+
+## Deploy only on nodes in a particular availability domain, eg PHX-AD-1 on OCI
+## Leave empty if there is no such requirement
+availabilityDomain:
+
+## Deploy multiple replicas for fast fail over
+## If 'persistence' is 'null' then fast fail over will not happen even if replicas>1 (as no persistence)
+replicas: 1
+
+## deploy LoadBalancer service
+loadBalService: false
+
+## name of image
+## Default is the Oracle-XE from DockerHub - https://hub.docker.com/r/gvenzl/oracle-xe
+image: gvenzl/oracle-xe:21.3.0
+
+## image pull policy, IfNotPresent or Always
+imagePullPolicy: IfNotPresent
+
+## container registry login/password
+imagePullSecrets:
+
+## Deploy only on nodes having required labels .
+## Format label_name : label_value . eg pool: sidb
+## Leave empty if there is no such requirement
+nodeLabels:
+#  pool: sidb
+
+# Set resource limits
+resources:
+  requests:
+    memory: 1Gi
+    cpu: 500m
+  limits:
+    memory: 4Gi
+    cpu: 2000m
+
+# The namespace to use for this Helm Chart
+namespace: oracle-namespace
+
+# Traefik
+traefik:
+  enabled: false
+  entryPoint: web
+  match: Host(`oracle-db.home`)
+  kind: Rule
+

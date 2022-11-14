@@ -1,0 +1,16 @@
+{{- if .Values.traefik.enabled }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ template "fullname" . }}
+  {{- include "oracle-db-labels" . |indent 2}}
+spec:
+  entryPoints:
+    - {{ .Values.traefik.entryPoint }}
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: {{ template "fullname" . }}
+          namespace: {{ .Values.namespace }}
+          port: 1521
+{{- end }}
